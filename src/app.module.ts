@@ -8,30 +8,39 @@ import { CompraModule } from './Compra/compra.module';
 import { VentaModule } from './Venta/venta.module';
 import { GananciaModule } from './Ganancias/ganancia.module';
 import { AuthModule } from './Auth/auth.module';
-
+import * as fs from 'fs';
+import * as path from 'path';
 
 @Module({
-  imports:[
+  imports: [
     ConfigModule.forRoot({
-    isGlobal: true,
-  }),
-  
-  TypeOrmModule.forRoot({
-    type: 'mysql',
-    host: process.env.DB_HOST,
-    port: Number(process.env.DB_PORT),
-    username: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    entities: [__dirname + '/**/*.entity{.ts,.js}'],
-    synchronize: true,
-  }),
+      isGlobal: true,
+    }),
+
+    TypeOrmModule.forRoot({
+      type: 'mysql',
+      host: process.env.DB_HOST,
+      port: Number(process.env.DB_PORT),
+      username: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+
+      ssl: {
+        rejectUnauthorized: true,
+        ca: fs.readFileSync(path.resolve(process.env.DB_CA_CERT!), 'utf8'),
+      },
+
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
+      synchronize: false,
+    }),
+
     ProductoModule,
     CompraModule,
     VentaModule,
     GananciaModule,
-    AuthModule
+    AuthModule,
   ],
+
   controllers: [AppController],
   providers: [AppService],
 })
