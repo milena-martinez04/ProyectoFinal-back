@@ -35,7 +35,7 @@ export class ProductoController {
     findByModel(@Param('modelo') modelo: string) {
         return this.productoServices.findByModel(modelo);
     }
-
+ 
     @Patch(':id')
     update(@Param('id') id: string, @Body() body: Partial<UpdateProductoDTO>) {
         return this.productoServices.update(Number(id), body as UpdateProductoDTO);
