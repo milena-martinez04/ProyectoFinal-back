@@ -72,11 +72,20 @@ export class CompraService {
   }
 
   async delete(id: number) {
-    const compra = await this.repoCompra.softDelete({ id_compra: id });
+    const compra = await this.repoCompra.findOne({
+      where: { id_compra: id },
+    });
+
     if (!compra) {
       throw new NotFoundException('Compra no encontrada');
     }
 
-    return { message: 'Compra eliminada exitosamente' };
+    await this.repoCompra.softDelete({
+      id_compra: id,
+    });
+
+    return {
+      message: 'Compra eliminada exitosamente',
+    };
   }
 }
