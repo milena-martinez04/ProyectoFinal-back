@@ -3,7 +3,7 @@ import { Compra } from './entities/compra.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm/dist/common/typeorm.decorators';
 import { CreateCompraDTO } from './Dto/createCompra.DTO';
-import { updateCompraDTO } from './Dto/updateCompra.DTO';
+import { UpdateCompraDTO } from './Dto/updateCompra.DTO';
 import { Producto } from 'src/Producto/entities/producto.entity';
 
 @Injectable()
@@ -43,7 +43,7 @@ export class CompraService {
     return this.repoCompra.save(compra);
   }
 
-  async update(id: number, updateCompraDto: updateCompraDTO): Promise<Compra> {
+  async update(id: number, updateCompraDto: UpdateCompraDTO): Promise<Compra> {
     const compra = await this.repoCompra.findOne({ where: { id_compra: id } });
     if (!compra) {
       throw new NotFoundException('Compra no encontrada');
