@@ -1,9 +1,37 @@
-export class UpdateVentaDTO{
-    fecha_venta?: string;
-    precio_venta?: number;
-    medio_de_pago?: string;
-    monto?: number;
-    pago_celular?: boolean;
-    seña?: number;
-    id_producto?: number;
+import {
+  IsOptional,
+  IsNumber,
+  IsString,
+  IsBoolean,
+  IsDateString,
+} from 'class-validator';
+
+export class UpdateVentaDTO {
+  @IsOptional()
+  @IsDateString()
+  fecha_venta?: string;
+
+  @IsOptional()
+  @IsNumber()
+  precio_venta?: number;
+
+  @IsOptional()
+  @IsString()
+  medio_de_pago?: string;
+
+  @IsOptional()
+  @IsNumber()
+  monto?: number;
+
+  @IsOptional()
+  @IsBoolean()
+  pago_celular?: boolean;
+
+  @IsOptional()
+  @IsNumber()
+  seña?: number;
+
+  @IsOptional()
+  @IsNumber()
+  id_producto?: number;
 }
