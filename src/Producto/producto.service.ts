@@ -24,6 +24,7 @@ export class ProductoServices {
       estado_detalle: createProductoDto.estado_detalle,
       imei_serie: createProductoDto.imei_serie,
       fecha_ingreso: new Date(createProductoDto.fecha_ingreso),
+      precio_compra: createProductoDto.precio_compra,
     });
 
     const productoGuardado = await this.repoProducto.save(producto);
@@ -43,7 +44,10 @@ export class ProductoServices {
     return productoGuardado;
   }
 
-  async update(id: number, updateProductoDto: UpdateProductoDTO): Promise<Producto> {
+  async update(
+    id: number,
+    updateProductoDto: UpdateProductoDTO,
+  ): Promise<Producto> {
     const producto = await this.repoProducto.findOne({
       where: { id_producto: id },
     });
