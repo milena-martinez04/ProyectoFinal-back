@@ -30,6 +30,9 @@ export class Producto {
   @Column({ type: 'date', nullable: false })
   fecha_ingreso: Date;
 
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  precio_compra: number | null;
+
   @CreateDateColumn({ name: 'created_at' })
   created_at: Date;
 
