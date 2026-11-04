@@ -1,0 +1,29 @@
+schema: spec-driven
+
+context: |
+  Proyecto: IphoneFY.
+  Es una aplicación de gestión de stock, compras, ventas y ganancias de iPhones.
+
+  Es un proyecto existente (brownfield) desarrollado con React, TypeScript,
+  NestJS, TypeORM y MySQL.
+
+  El objetivo del nuevo desarrollo es permitir que diferentes personas
+  ingresen mediante sus propias cuentas de Google y que cada una tenga
+  sus productos, compras y ventas independientes.
+
+  La autenticación debe mantener Google OAuth.
+  No se busca incorporar registro con email y contraseña.
+
+  Los datos de cada usuario deben estar protegidos y aislados.
+  Un usuario nunca debe poder consultar o modificar información de otro.
+
+  No es necesario conservar los datos actuales.
+  Más adelante se utilizará una base de datos MySQL completamente nueva.
+  No modificar ni eliminar la base de datos actual durante el desarrollo
+  y la planificación.
+
+  Los documentos de OpenSpec deben escribirse en español.
+
+  Antes de implementar, analizar el código existente y documentar
+  las decisiones de diseño. No realizar cambios en el código durante
+  las etapas de propuesta y planificación.
