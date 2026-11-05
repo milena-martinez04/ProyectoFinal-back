@@ -22,7 +22,7 @@ export class CreateProductoDTO {
   imei_serie!: string;
 
   @IsDateString()
-  fecha_ingreso!: Date;
+  fecha_ingreso!: string;
 
   @IsNumber()
   precio_compra!: number;
