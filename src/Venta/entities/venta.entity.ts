@@ -10,11 +10,21 @@ import {
 } from 'typeorm';
 import { Producto } from '../../Producto/entities/producto.entity';
 import { Compra } from 'src/Compra/entities/compra.entity';
+import { Usuario } from '../../Auth/entities/usuario.entity';
 
 @Entity('venta')
 export class Venta {
   @PrimaryGeneratedColumn('increment')
   id_venta!: number;
+
+  @Column({ type: 'int' })
+  id_usuario: number;
+
+  @ManyToOne(() => Usuario)
+  @JoinColumn({
+    name: 'id_usuario',
+  })
+  usuario: Usuario;
 
   @Column({ type: 'date', nullable: false })
   fecha_venta!: Date;

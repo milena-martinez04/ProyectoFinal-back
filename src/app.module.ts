@@ -25,10 +25,12 @@ import * as path from 'path';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
 
-      ssl: {
-        rejectUnauthorized: true,
-        ca: fs.readFileSync(path.resolve(process.env.DB_CA_CERT!), 'utf8'),
-      },
+      ...(process.env.DB_SSL === 'true' && {
+        ssl: {
+          rejectUnauthorized: true,
+          ca: fs.readFileSync(path.resolve(process.env.DB_CA_CERT!), 'utf8'),
+        },
+      }),
 
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: false,

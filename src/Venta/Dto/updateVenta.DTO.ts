@@ -34,4 +34,8 @@ export class UpdateVentaDTO {
   @IsOptional()
   @IsNumber()
   id_producto?: number;
+
+  @IsOptional()
+  @IsNumber()
+  id_compra?: number;
 }

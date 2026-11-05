@@ -9,11 +9,21 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Producto } from '../../Producto/entities/producto.entity';
+import { Usuario } from '../../Auth/entities/usuario.entity';
 
 @Entity('compra')
 export class Compra {
   @PrimaryGeneratedColumn('increment')
   id_compra: number;
+
+  @Column({ type: 'int' })
+  id_usuario: number;
+
+  @ManyToOne(() => Usuario)
+  @JoinColumn({
+    name: 'id_usuario',
+  })
+  usuario: Usuario;
 
   @Column({ type: 'date' })
   fecha_compra: Date;

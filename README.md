@@ -1,98 +1,210 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# IphoneFY — Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API REST para gestión de compra-venta de celulares (iPhone), desarrollada con NestJS, TypeORM y MySQL. Permite autenticación con Google OAuth, manejo de productos (celulares), compras, ventas (incluyendo celulares tomados como parte de pago) y reportes de ganancias, con aislamiento de datos por usuario autenticado.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Tecnologías utilizadas
 
-## Description
+- [NestJS](https://nestjs.com/) (framework Node.js)
+- TypeScript
+- [TypeORM](https://typeorm.io/) (ORM)
+- MySQL / [mysql2](https://www.npmjs.com/package/mysql2)
+- [class-validator](https://github.com/typestack/class-validator) y [class-transformer](https://github.com/typestack/class-transformer) (validación y transformación de DTOs)
+- [@nestjs/config](https://docs.nestjs.com/techniques/configuration) (variables de entorno)
+- [@nestjs/jwt](https://docs.nestjs.com/security/authentication) (JWT)
+- [google-auth-library](https://github.com/googleapis/google-auth-library-nodejs) (verificación de tokens de Google OAuth)
+- Jest (tests)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Requisitos previos
 
-## Project setup
+- Node.js instalado (v18 o superior recomendado)
+- MySQL server instalado y corriendo (local o remoto)
+- Cuenta de Google con credenciales de OAuth (Client ID) para el login
+- Un archivo `.env` en la raíz del proyecto con las variables de entorno requeridas
+
+## Instalación de dependencias
+
+Desde la raíz del proyecto:
 
 ```bash
-$ pnpm install
+npm install
 ```
 
-## Compile and run the project
+## Configuración de variables de entorno
+
+Crear un archivo `.env` en la raíz del proyecto con las siguientes variables. Los valores son ejemplo; reemplazar por los reales del entorno:
+
+```env
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=tu_usuario_mysql
+DB_PASSWORD=tu_contraseña_mysql
+DB_NAME=nombre_base_datos
+
+JWT_SECRET=secreto_para_firmar_jwt
+JWT_EXPIRATION=1h
+
+DB_SSL=false
+# DB_CA_CERT=ruta/al/certificado/ca.pem  # solo si DB_SSL=true
+
+GOOGLE_CLIENT_ID=tu_client_id_de_google.apps.googleusercontent.com
+
+FRONTEND_URL=http://localhost:5173
+PORT=3000
+```
+
+Variables obligatorias para la conexión a MySQL: `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD` y `DB_NAME`.  
+`DB_SSL` es opcional; si se establece en `true`, también se requiere `DB_CA_CERT` con la ruta al certificado CA de MySQL.  
+`GOOGLE_CLIENT_ID` y `JWT_SECRET` son obligatorias para la autenticación.
+
+## Configuración de MySQL local
+
+1. Instalar MySQL y crear una base de datos vacía (por ejemplo, el nombre indicado en `DB_NAME`).
+2. Configurar un usuario y contraseña con permisos sobre esa base de datos (`DB_USER`, `DB_PASSWORD`).
+3. Completar el archivo `.env` con los datos de conexión.
+4. El proyecto usa TypeORM con `synchronize: false`; el esquema se aplica mediante migraciones.
+
+## Ejecución de migraciones
+
+Los scripts de migración están definidos en `package.json` y apuntan al archivo `src/data-source/data-source.ts`:
 
 ```bash
-# development
-$ pnpm run start
+# Ejecutar migraciones pendientes
+npm run migration:run
 
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+# Revertir la última migración aplicada
+npm run migration:revert
 ```
 
-## Run tests
+## Inicio del servidor
 
 ```bash
-# unit tests
-$ pnpm run test
+# Modo desarrollo (con recarga automática)
+npm run start:dev
 
-# e2e tests
-$ pnpm run test:e2e
+# Compilación para producción
+npm run build
 
-# test coverage
-$ pnpm run test:cov
+# Inicio en producción (después de build)
+npm run start:prod
+
+# Ejecutar tests
+npm test
 ```
 
-## Deployment
+El servidor escucha en `PORT` (por defecto `3000`) y expone la API bajo el prefijo global `api/v1` (configurado en `src/main.ts`).
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+## Autenticación Google OAuth y JWT
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+El endpoint de autenticación es:
 
-```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
+- `POST /api/v1/auth/google` — recibe `{ token }` (ID Token de Google), lo verifica con `google-auth-library`, crea o recupera el usuario por su `googleId`, y devuelve un JWT firmado (`accessToken`) junto con los datos del usuario (id, nombre, email, foto).
+
+Los endpoints protegidos requieren el JWT en el encabezado `Authorization: Bearer <token>`, validado por el guard `JwtAuthGuard`.
+
+## Identificación del usuario autenticado y aislamiento de datos
+
+Cada request autenticada se identifica mediante el `sub` del payload del JWT (el `id` del usuario en la base de datos). El `JwtAuthGuard` inyecta el usuario en la request y el decorador `GetUser` lo expone a los controladores.
+
+Todos los servicios filtran los datos por `id_usuario` en cada consulta (`find`, `findBy`, `findOne`, `softDelete`, etc.), de modo que un usuario solo puede acceder a sus propios productos, compras y ventas. Esto se aplica en:
+
+- Producto: creación asociada al usuario, listado, búsqueda, actualización y eliminación filtrados por `id_usuario`.
+- Compra: validación de que el producto pertenece al usuario antes de crear; listado, búsqueda, actualización y eliminación filtrados por `id_usuario`.
+- Venta: validación de producto y compra del usuario; listado, búsqueda, actualización y eliminación filtrados por `id_usuario`. Al crear una venta, el producto vendido se desactiva (`softDelete`) vinculado al usuario autenticado.
+- Ganancias: reportes calculados únicamente sobre las ventas del usuario autenticado.
+
+La creación automática de una `Compra` al crear un `Producto` se conserva sin cambios.
+
+## Endpoints principales
+
+Todas las rutas están bajo el prefijo `api/v1`.
+
+### Autenticación
+| Método | Ruta | Cuerpo | Descripción |
+|--------|------|--------|-------------|
+| POST | `/auth/google` | `{ token: string }` | Login con Google OAuth y emisión de JWT |
+
+### Productos (requiere autenticación)
+| Método | Ruta | Cuerpo | Descripción |
+|--------|------|--------|-------------|
+| POST | `/producto` | `CreateProductoDTO` | Crea un producto y una compra asociada automáticamente |
+| GET | `/producto` | — | Lista productos del usuario autenticado |
+| GET | `/producto/:id` | — | Obtiene un producto por ID |
+| GET | `/producto/fecha/:date` | — | Busca productos por fecha de ingreso |
+| GET | `/producto/modelo/:modelo` | — | Busca productos por modelo |
+| PATCH | `/producto/:id` | `UpdateProductoDTO` | Actualiza campos permitidos de un producto |
+| DELETE | `/producto/:id` | — | Elimina (soft delete) un producto |
+
+### Compras (requiere autenticación)
+| Método | Ruta | Cuerpo | Descripción |
+|--------|------|--------|-------------|
+| POST | `/compra` | `CreateCompraDTO` | Registra una compra |
+| GET | `/compra` | — | Lista compras del usuario autenticado |
+| GET | `/compra/:id` | — | Obtiene una compra por ID |
+| GET | `/compra/fecha/:date` | — | Busca compras por fecha |
+| PATCH | `/compra/:id` | `UpdateCompraDTO` | Actualiza campos permitidos de una compra |
+| DELETE | `/compra/:id` | — | Elimina (soft delete) una compra |
+
+### Ventas (requiere autenticación)
+| Método | Ruta | Cuerpo | Descripción |
+|--------|------|--------|-------------|
+| POST | `/venta` | `CreateVentaDTO` | Registra una venta (incluye celular como parte de pago si aplica) |
+| GET | `/venta` | — | Lista ventas del usuario autenticado |
+| GET | `/venta/:id` | — | Obtiene una venta por ID |
+| GET | `/venta/fecha/:date` | — | Busca ventas por fecha |
+| PATCH | `/venta/:id` | `UpdateVentaDTO` | Actualiza campos permitidos de una venta |
+| DELETE | `/venta/:id` | — | Elimina (soft delete) una venta |
+
+### Ganancias (requiere autenticación)
+| Método | Ruta | Query params | Descripción |
+|--------|------|--------------|-------------|
+| GET | `/ganancia/ganancia-mensual` | `mes`, `anio` | Total de ventas, compras y ganancia de un mes |
+| GET | `/ganancia/ganancia-semanal` | `fecha` | Total de ventas, compras y ganancia de una semana |
+| GET | `/ganancia/resumen` | — | Resumen mensual acumulado de ganancias |
+
+Los cuerpos de request (`CreateProductoDTO`, `UpdateProductoDTO`, `CreateCompraDTO`, `UpdateCompraDTO`, `CreateVentaDTO`, `UpdateVentaDTO`) están definidos como DTOs con `class-validator` en cada módulo.
+
+## Estructura de carpetas y módulos principales
+
+```
+src/
+├── main.ts                      # Punto de entrada, ValidationPipe global, validación de variables de entorno, CORS
+├── app.module.ts                # Módulo raíz (ConfigModule, TypeORM, módulos de negocio)
+├── app.controller.ts            # Endpoint raíz de salud
+├── app.service.ts
+├── Auth/
+│   ├── auth.controller.ts       # POST /auth/google
+│   ├── auth.service.ts          # Verificación Google, emisión JWT, creación/recuperación de usuario
+│   ├── auth.module.ts
+│   ├── jwt-auth.guard.ts        # Protección de endpoints con JWT
+│   ├── get-user.decorator.ts    # Inyección del usuario autenticado en la request
+│   ├── Dto/loginGoogle.DTO.ts
+│   └── entities/usuario.entity.ts
+├── Celular/
+│   └── TomarCelularDto.ts       # DTO de celular recibido como parte de pago
+├── Compra/
+│   ├── compra.controller.ts
+│   ├── compra.service.ts
+│   ├── compra.module.ts
+│   ├── Dto/
+│   └── entities/compra.entity.ts
+├── Producto/
+│   ├── producto.controller.ts
+│   ├── producto.service.ts
+│   ├── producto.module.ts
+│   ├── Dto/
+│   └── entities/producto.entity.ts
+├── Venta/
+│   ├── venta.controller.ts
+│   ├── venta.service.ts
+│   ├── venta.module.ts
+│   ├── Dto/
+│   └── entities/venta.entity.ts
+├── Ganancias/
+│   ├── ganancia.controller.ts
+│   ├── ganancia.service.ts
+│   └── ganancia.module.ts
+├── data-source/data-source.ts   # DataSource de TypeORM usado por las migraciones
+└── migrations/                  # Migraciones de la base de datos
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Cada módulo de negocio (Producto, Compra, Venta, Ganancias) importa `AuthModule` para reutilizar el guard de autenticación y garantizar el aislamiento de datos por usuario.

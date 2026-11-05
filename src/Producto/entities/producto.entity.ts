@@ -3,14 +3,26 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Usuario } from '../../Auth/entities/usuario.entity';
 
 @Entity('producto')
 export class Producto {
   @PrimaryGeneratedColumn('increment')
   id_producto: number;
+
+  @Column({ type: 'int' })
+  id_usuario: number;
+
+  @ManyToOne(() => Usuario)
+  @JoinColumn({
+    name: 'id_usuario',
+  })
+  usuario: Usuario;
 
   @Column({ type: 'varchar', length: 50, nullable: false })
   modelo: string;
